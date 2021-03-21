@@ -1,3 +1,4 @@
+//https://github.com/AbrahamQll/BigNumbersNet
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,7 @@ namespace BigNumbersNet
 			 *
 			 * If you do endup using this code, please cosider a link back to this repository
 			 * thanky ou for playing nice! :)
+			 * https://github.com/AbrahamQll/BigNumbersNet
 			 *
              */
 
