@@ -1,5 +1,7 @@
 # BigNumbersNet
 
+[![NuGet Version](https://img.shields.io/nuget/v/BigNumbersNet.svg)](https://www.nuget.org/packages/BigNumbersNet)
+
 A simple arbitrary-precision integer library for .NET, facilitating calculations for exceptionally large numbers.
 
 ## Features
