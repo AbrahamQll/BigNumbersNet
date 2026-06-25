@@ -1,0 +1,54 @@
+name: Publish NuGet Package
+
+on:
+  release:
+    types: [published]
+
+# This permissions block is strictly required for OpenID Connect (OIDC) to function
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    name: Build, Pack & Publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Deterministic history mapping for SourceLink
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Extract Version from Tag
+        id: get_version
+        run: |
+          TAG_NAME="${{ github.event.release.tag_name }}"
+          VERSION="${TAG_NAME#v}" # strips leading 'v' if present (e.g. v1.0.0 -> 1.0.0)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build Project
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Create NuGet Package
+        run: dotnet pack --configuration Release --no-build --output ./dist /p:Version=${{ env.VERSION }}
+
+      # Exchanges the GitHub OIDC token for a temporary, 1-hour NuGet.org key
+      - name: NuGet Login
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: AbrahamQll
+
+      # Pushes both the package (.nupkg) and symbols (.snupkg) to NuGet.org
+      - name: Push to NuGet.org
+        run: dotnet nuget push ./dist/*.nupkg --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate

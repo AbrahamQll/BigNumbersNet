@@ -1,25 +1,31 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <!-- Multi-target the current LTS (.NET 8) and future/current releases (.NET 10) -->
-    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    
-    <!-- NuGet Metadata -->
-    <PackageId>BigNumbersNet</PackageId>
-    <Version>1.0.0</Version>
-    <Authors>YourNameOrGitHubHandle</Authors>
-    <Description>An arbitrary-precision integer arithmetic library for .NET.</Description>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/AbrahamQll/BigNumbersNet</RepositoryUrl>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageTags>bignumber math biginteger arbitrary-precision arithmetic</PackageTags>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="\"/>
-  </ItemGroup>
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<PackageId>BigNumbersNet</PackageId>
+		<Version>1.0.0</Version>
+		<Authors>AbrahamQll</Authors>
+		<Description>An arbitrary-precision decimal and integer arithmetic library for .NET.</Description>
+		<PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
+		<PackageTags>bignumber math biginteger arbitrary-precision arithmetic decimal</PackageTags>
+		<PackageReadmeFile>..\README.md</PackageReadmeFile>
+		<PackageProjectUrl>https://github.com/AbrahamQll/BigNumbersNet</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/AbrahamQll/BigNumbersNet.git</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="\"/>
+	</ItemGroup>
 </Project>
