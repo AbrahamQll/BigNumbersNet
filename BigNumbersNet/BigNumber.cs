@@ -75,6 +75,7 @@ namespace BigNumbersNet
         /// <summary>
         /// Initializes a new instance of the <see cref="BigNumber"/> class from a string.
         /// </summary>
+        /// <param name="value">The string representation of the number.</param>
         public BigNumber(string value)
         {
             var parsed = Parse(value);
@@ -85,12 +86,25 @@ namespace BigNumbersNet
 
         #region Parsing and Conversions
 
+        /// <summary>
+        /// Parses a string representation of a decimal or integer into a <see cref="BigNumber"/>.
+        /// </summary>
+        /// <param name="value">The string containing the number to parse.</param>
+        /// <returns>A new <see cref="BigNumber"/> representing the parsed value.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/> is null.</exception>
+        /// <exception cref="FormatException">Thrown when <paramref name="value"/> is not in a valid format.</exception>
         public static BigNumber Parse(string value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
             return Parse(value.AsSpan());
         }
 
+        /// <summary>
+        /// Parses a span of characters representing a decimal or integer into a <see cref="BigNumber"/>.
+        /// </summary>
+        /// <param name="value">The character span containing the number to parse.</param>
+        /// <returns>A new <see cref="BigNumber"/> representing the parsed value.</returns>
+        /// <exception cref="FormatException">Thrown when <paramref name="value"/> is not in a valid format.</exception>
         public static BigNumber Parse(ReadOnlySpan<char> value)
         {
             if (TryParse(value, out var result))
@@ -100,6 +114,12 @@ namespace BigNumbersNet
             throw new FormatException("The input string was not in a correct format.");
         }
 
+        /// <summary>
+        /// Tries to parse a string representation of a decimal or integer into a <see cref="BigNumber"/>.
+        /// </summary>
+        /// <param name="value">The string to parse.</param>
+        /// <param name="result">The resulting <see cref="BigNumber"/> if successful; otherwise, <c>null</c>.</param>
+        /// <returns><c>true</c> if the parsing was successful; otherwise, <c>false</c>.</returns>
         public static bool TryParse(string? value, [NotNullWhen(true)] out BigNumber? result)
         {
             if (value == null)
@@ -110,6 +130,12 @@ namespace BigNumbersNet
             return TryParse(value.AsSpan(), out result);
         }
 
+        /// <summary>
+        /// Tries to parse a character span representing a decimal or integer into a <see cref="BigNumber"/>.
+        /// </summary>
+        /// <param name="value">The character span to parse.</param>
+        /// <param name="result">The resulting <see cref="BigNumber"/> if successful; otherwise, <c>null</c>.</param>
+        /// <returns><c>true</c> if the parsing was successful; otherwise, <c>false</c>.</returns>
         public static bool TryParse(ReadOnlySpan<char> value, [NotNullWhen(true)] out BigNumber? result)
         {
             result = null;
@@ -186,6 +212,10 @@ namespace BigNumbersNet
             return true;
         }
 
+        /// <summary>
+        /// Implicitly converts a 64-bit signed integer to a <see cref="BigNumber"/>.
+        /// </summary>
+        /// <param name="value">The 64-bit signed integer to convert.</param>
         public static implicit operator BigNumber(long value)
         {
             if (value == 0) return Zero;
@@ -201,8 +231,18 @@ namespace BigNumbersNet
             return new BigNumber(tempDigits.ToArray(), 0, isNegative);
         }
 
+        /// <summary>
+        /// Implicitly converts a 32-bit signed integer to a <see cref="BigNumber"/>.
+        /// </summary>
+        /// <param name="value">The 32-bit signed integer to convert.</param>
         public static implicit operator BigNumber(int value) => (long)value;
 
+        /// <summary>
+        /// Explicitly converts a <see cref="BigNumber"/> to a 64-bit signed integer, truncating any fractional part.
+        /// </summary>
+        /// <param name="value">The <see cref="BigNumber"/> to convert.</param>
+        /// <returns>A 64-bit signed integer representation of the value.</returns>
+        /// <exception cref="OverflowException">Thrown when the value is too large to fit in a 64-bit signed integer.</exception>
         public static explicit operator long(BigNumber value)
         {
             BigNumber truncated = value.Truncate();
@@ -233,6 +273,12 @@ namespace BigNumbersNet
             return truncated.IsNegative ? -result : result;
         }
 
+        /// <summary>
+        /// Explicitly converts a <see cref="BigNumber"/> to a 32-bit signed integer, truncating any fractional part.
+        /// </summary>
+        /// <param name="value">The <see cref="BigNumber"/> to convert.</param>
+        /// <returns>A 32-bit signed integer representation of the value.</returns>
+        /// <exception cref="OverflowException">Thrown when the value is too large to fit in a 32-bit signed integer.</exception>
         public static explicit operator int(BigNumber value)
         {
             long longValue = (long)value;
@@ -243,11 +289,21 @@ namespace BigNumbersNet
             return (int)longValue;
         }
 
+        /// <summary>
+        /// Explicitly converts a <see cref="BigNumber"/> to a double-precision floating-point number.
+        /// </summary>
+        /// <param name="value">The <see cref="BigNumber"/> to convert.</param>
+        /// <returns>A double-precision floating-point representation of the value.</returns>
         public static explicit operator double(BigNumber value)
         {
             return double.Parse(value.ToString(), System.Globalization.CultureInfo.InvariantCulture);
         }
 
+        /// <summary>
+        /// Explicitly converts a <see cref="BigNumber"/> to a decimal floating-point number.
+        /// </summary>
+        /// <param name="value">The <see cref="BigNumber"/> to convert.</param>
+        /// <returns>A decimal floating-point representation of the value.</returns>
         public static explicit operator decimal(BigNumber value)
         {
             return decimal.Parse(value.ToString(), System.Globalization.CultureInfo.InvariantCulture);
@@ -257,6 +313,12 @@ namespace BigNumbersNet
 
         #region Standard Arithmetic Operations
 
+        /// <summary>
+        /// Adds two <see cref="BigNumber"/> values.
+        /// </summary>
+        /// <param name="a">The first operand.</param>
+        /// <param name="b">The second operand.</param>
+        /// <returns>The sum of <paramref name="a"/> and <paramref name="b"/>.</returns>
         public static BigNumber operator +(BigNumber a, BigNumber b)
         {
             int targetScale = Math.Max(a._scale, b._scale);
@@ -284,19 +346,41 @@ namespace BigNumbersNet
             }
         }
 
+        /// <summary>
+        /// Subtracts one <see cref="BigNumber"/> value from another.
+        /// </summary>
+        /// <param name="a">The first operand (minuend).</param>
+        /// <param name="b">The second operand (subtrahend).</param>
+        /// <returns>The difference of <paramref name="a"/> minus <paramref name="b"/>.</returns>
         public static BigNumber operator -(BigNumber a, BigNumber b)
         {
             return a + (-b);
         }
 
+        /// <summary>
+        /// Negates a <see cref="BigNumber"/> value.
+        /// </summary>
+        /// <param name="a">The value to negate.</param>
+        /// <returns>The negated value of <paramref name="a"/>.</returns>
         public static BigNumber operator -(BigNumber a)
         {
             if (a.IsZero) return a;
             return new BigNumber(a._digits, a._scale, !a._isNegative);
         }
 
+        /// <summary>
+        /// Returns the unary plus of a <see cref="BigNumber"/> value.
+        /// </summary>
+        /// <param name="a">The operand.</param>
+        /// <returns>The same value as <paramref name="a"/>.</returns>
         public static BigNumber operator +(BigNumber a) => a;
 
+        /// <summary>
+        /// Multiplies two <see cref="BigNumber"/> values.
+        /// </summary>
+        /// <param name="a">The first operand.</param>
+        /// <param name="b">The second operand.</param>
+        /// <returns>The product of <paramref name="a"/> and <paramref name="b"/>.</returns>
         public static BigNumber operator *(BigNumber a, BigNumber b)
         {
             if (a.IsZero || b.IsZero) return Zero;
@@ -309,6 +393,9 @@ namespace BigNumbersNet
         /// <summary>
         /// Divides one <see cref="BigNumber"/> value by another, producing a high-precision decimal result.
         /// </summary>
+        /// <param name="a">The dividend.</param>
+        /// <param name="b">The divisor.</param>
+        /// <returns>The quotient of <paramref name="a"/> divided by <paramref name="b"/>.</returns>
         public static BigNumber operator /(BigNumber a, BigNumber b)
         {
             if (b.IsZero) throw new DivideByZeroException();
@@ -336,6 +423,12 @@ namespace BigNumbersNet
             return Normalize(quotientDigits, finalScale, resultNegative);
         }
 
+        /// <summary>
+        /// Calculates the remainder of dividing one <see cref="BigNumber"/> value by another.
+        /// </summary>
+        /// <param name="a">The dividend.</param>
+        /// <param name="b">The divisor.</param>
+        /// <returns>The remainder of dividing <paramref name="a"/> by <paramref name="b"/>.</returns>
         public static BigNumber operator %(BigNumber a, BigNumber b)
         {
             if (b.IsZero) throw new DivideByZeroException();
@@ -354,6 +447,9 @@ namespace BigNumbersNet
         /// <summary>
         /// Performs truncating integer division on two values, discarding any fractional remainder.
         /// </summary>
+        /// <param name="left">The dividend.</param>
+        /// <param name="right">The divisor.</param>
+        /// <returns>The quotient as an integer.</returns>
         public static BigNumber IntegerDivide(BigNumber left, BigNumber right)
         {
             if (right.IsZero) throw new DivideByZeroException();
@@ -371,6 +467,7 @@ namespace BigNumbersNet
         /// <summary>
         /// Discards any fractional digits, returning the integer part of the number.
         /// </summary>
+        /// <returns>The truncated integer <see cref="BigNumber"/> value.</returns>
         public BigNumber Truncate()
         {
             if (_scale == 0) return this;
@@ -383,21 +480,44 @@ namespace BigNumbersNet
             return Normalize(truncatedDigits, 0, _isNegative);
         }
 
+        /// <summary>
+        /// Returns the absolute value of a <see cref="BigNumber"/>.
+        /// </summary>
+        /// <param name="value">The value to evaluate.</param>
+        /// <returns>The absolute value of <paramref name="value"/>.</returns>
         public static BigNumber Abs(BigNumber value)
         {
             return value.IsNegative ? -value : value;
         }
 
+        /// <summary>
+        /// Returns the larger of two <see cref="BigNumber"/> values.
+        /// </summary>
+        /// <param name="val1">The first value to compare.</param>
+        /// <param name="val2">The second value to compare.</param>
+        /// <returns>The larger of <paramref name="val1"/> and <paramref name="val2"/>.</returns>
         public static BigNumber Max(BigNumber val1, BigNumber val2)
         {
             return val1 > val2 ? val1 : val2;
         }
 
+        /// <summary>
+        /// Returns the smaller of two <see cref="BigNumber"/> values.
+        /// </summary>
+        /// <param name="val1">The first value to compare.</param>
+        /// <param name="val2">The second value to compare.</param>
+        /// <returns>The smaller of <paramref name="val1"/> and <paramref name="val2"/>.</returns>
         public static BigNumber Min(BigNumber val1, BigNumber val2)
         {
             return val1 < val2 ? val1 : val2;
         }
 
+        /// <summary>
+        /// Raises a <see cref="BigNumber"/> value to a specified power.
+        /// </summary>
+        /// <param name="baseValue">The base value.</param>
+        /// <param name="exponent">The exponent power, which must be non-negative.</param>
+        /// <returns>The result of raising <paramref name="baseValue"/> to the <paramref name="exponent"/> power.</returns>
         public static BigNumber Pow(BigNumber baseValue, int exponent)
         {
             if (exponent < 0)
@@ -427,6 +547,9 @@ namespace BigNumbersNet
         /// <summary>
         /// Calculates the greatest common divisor of two integer values.
         /// </summary>
+        /// <param name="left">The first integer operand.</param>
+        /// <param name="right">The second integer operand.</param>
+        /// <returns>The greatest common divisor of <paramref name="left"/> and <paramref name="right"/>.</returns>
         public static BigNumber GreatestCommonDivisor(BigNumber left, BigNumber right)
         {
             if (left._scale > 0 || right._scale > 0)
@@ -679,6 +802,11 @@ namespace BigNumbersNet
 
         #region Standard Interface Implementations
 
+        /// <summary>
+        /// Compares the current instance with another <see cref="BigNumber"/> and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object.
+        /// </summary>
+        /// <param name="other">An object to compare with this instance.</param>
+        /// <returns>A value that indicates the relative order of the objects being compared.</returns>
         public int CompareTo(BigNumber? other)
         {
             if (other is null) return 1;
@@ -694,6 +822,11 @@ namespace BigNumbersNet
             return this.IsNegative ? -cmpAbs : cmpAbs;
         }
 
+        /// <summary>
+        /// Compares the current instance with another object and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object.
+        /// </summary>
+        /// <param name="obj">An object to compare with this instance.</param>
+        /// <returns>A value that indicates the relative order of the objects being compared.</returns>
         public int CompareTo(object? obj)
         {
             if (obj is null) return 1;
@@ -701,6 +834,11 @@ namespace BigNumbersNet
             throw new ArgumentException("Object must be of type BigNumber", nameof(obj));
         }
 
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns><c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
         public bool Equals(BigNumber? other)
         {
             if (other is null) return false;
@@ -712,8 +850,17 @@ namespace BigNumbersNet
                    CompareAbsolute(this._digits, other._digits) == 0;
         }
 
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current object.</param>
+        /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
         public override bool Equals(object? obj) => obj is BigNumber other && Equals(other);
 
+        /// <summary>
+        /// Serves as the default hash function.
+        /// </summary>
+        /// <returns>A hash code for the current object.</returns>
         public override int GetHashCode()
         {
             var hash = new HashCode();
@@ -726,15 +873,66 @@ namespace BigNumbersNet
             return hash.ToHashCode();
         }
 
+        /// <summary>
+        /// Compares two <see cref="BigNumber"/> instances for equality.
+        /// </summary>
+        /// <param name="a">The first operand.</param>
+        /// <param name="b">The second operand.</param>
+        /// <returns><c>true</c> if <paramref name="a"/> is equal to <paramref name="b"/>; otherwise, <c>false</c>.</returns>
         public static bool operator ==(BigNumber? a, BigNumber? b) => a is null ? b is null : a.Equals(b);
+
+        /// <summary>
+        /// Compares two <see cref="BigNumber"/> instances for inequality.
+        /// </summary>
+        /// <param name="a">The first operand.</param>
+        /// <param name="b">The second operand.</param>
+        /// <returns><c>true</c> if <paramref name="a"/> is not equal to <paramref name="b"/>; otherwise, <c>false</c>.</returns>
         public static bool operator !=(BigNumber? a, BigNumber? b) => !(a == b);
+
+        /// <summary>
+        /// Evaluates if one <see cref="BigNumber"/> is strictly less than another.
+        /// </summary>
+        /// <param name="a">The first operand.</param>
+        /// <param name="b">The second operand.</param>
+        /// <returns><c>true</c> if <paramref name="a"/> is strictly less than <paramref name="b"/>; otherwise, <c>false</c>.</returns>
         public static bool operator <(BigNumber? a, BigNumber? b) => a is null ? b is not null : a.CompareTo(b) < 0;
+
+        /// <summary>
+        /// Evaluates if one <see cref="BigNumber"/> is strictly greater than another.
+        /// </summary>
+        /// <param name="a">The first operand.</param>
+        /// <param name="b">The second operand.</param>
+        /// <returns><c>true</c> if <paramref name="a"/> is strictly greater than <paramref name="b"/>; otherwise, <c>false</c>.</returns>
         public static bool operator >(BigNumber? a, BigNumber? b) => a is not null && a.CompareTo(b) > 0;
+
+        /// <summary>
+        /// Evaluates if one <see cref="BigNumber"/> is less than or equal to another.
+        /// </summary>
+        /// <param name="a">The first operand.</param>
+        /// <param name="b">The second operand.</param>
+        /// <returns><c>true</c> if <paramref name="a"/> is less than or equal to <paramref name="b"/>; otherwise, <c>false</c>.</returns>
         public static bool operator <=(BigNumber? a, BigNumber? b) => a is null || a.CompareTo(b) <= 0;
+
+        /// <summary>
+        /// Evaluates if one <see cref="BigNumber"/> is greater than or equal to another.
+        /// </summary>
+        /// <param name="a">The first operand.</param>
+        /// <param name="b">The second operand.</param>
+        /// <returns><c>true</c> if <paramref name="a"/> is greater than or equal to <paramref name="b"/>; otherwise, <c>false</c>.</returns>
         public static bool operator >=(BigNumber? a, BigNumber? b) => a is null ? b is null : a.CompareTo(b) >= 0;
 
+        /// <summary>
+        /// Converts the current <see cref="BigNumber"/> value to its equivalent string representation.
+        /// </summary>
+        /// <returns>The string representation of this <see cref="BigNumber"/>.</returns>
         public override string ToString() => ToString(null, null);
 
+        /// <summary>
+        /// Formats the value of the current instance using the specified format.
+        /// </summary>
+        /// <param name="format">The format to use, or <c>null</c> to use the default format.</param>
+        /// <param name="formatProvider">The provider to use to format the value, or <c>null</c> to obtain the format information from the current locale setting of the operating system.</param>
+        /// <returns>The string representation of this <see cref="BigNumber"/> formatted as specified.</returns>
         public string ToString(string? format, IFormatProvider? formatProvider)
         {
             if (IsZero) return "0";
@@ -781,9 +979,38 @@ namespace BigNumbersNet
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Parses a string representation of a number using a specified format provider.
+        /// </summary>
+        /// <param name="s">The string containing the number to parse.</param>
+        /// <param name="provider">The format provider.</param>
+        /// <returns>The parsed <see cref="BigNumber"/> value.</returns>
         public static BigNumber Parse(string s, IFormatProvider? provider) => Parse(s);
+
+        /// <summary>
+        /// Tries to parse a string representation of a number using a specified format provider.
+        /// </summary>
+        /// <param name="s">The string to parse.</param>
+        /// <param name="provider">The format provider.</param>
+        /// <param name="result">The resulting <see cref="BigNumber"/> if successful; otherwise, <c>null</c>.</param>
+        /// <returns><c>true</c> if the parsing was successful; otherwise, <c>false</c>.</returns>
         public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [NotNullWhen(true)] out BigNumber? result) => TryParse(s, out result);
+
+        /// <summary>
+        /// Parses a character span representing a number using a specified format provider.
+        /// </summary>
+        /// <param name="s">The character span containing the number to parse.</param>
+        /// <param name="provider">The format provider.</param>
+        /// <returns>The parsed <see cref="BigNumber"/> value.</returns>
         public static BigNumber Parse(ReadOnlySpan<char> s, IFormatProvider? provider) => Parse(s);
+
+        /// <summary>
+        /// Tries to parse a character span representing a number using a specified format provider.
+        /// </summary>
+        /// <param name="s">The character span to parse.</param>
+        /// <param name="provider">The format provider.</param>
+        /// <param name="result">The resulting <see cref="BigNumber"/> if successful; otherwise, <c>null</c>.</param>
+        /// <returns><c>true</c> if the parsing was successful; otherwise, <c>false</c>.</returns>
         public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, [NotNullWhen(true)] out BigNumber? result) => TryParse(s, out result);
 
         #endregion

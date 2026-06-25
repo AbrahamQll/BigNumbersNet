@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="BigNumbersNet.Gui/BigNumbersNet.Gui.csproj" Id="7c561eff-4184-4cd4-bbe3-5f200f61a813" />
   <Project Path="BigNumbersNet.Tests/BigNumbersNet.Tests.csproj" />
   <Project Path="BigNumbersNet/BigNumbersNet.csproj" />
 </Solution>

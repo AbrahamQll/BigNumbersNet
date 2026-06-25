@@ -45,7 +45,7 @@ jobs:
 
       - name: Create NuGet Package
         # Explicitly pass the version only during the packing phase
-        run: dotnet pack --configuration Release --no-build --output ./dist /p:Version=${{ env.PACKAGE_VERSION }}
+        run: dotnet pack BigNumbersNet/BigNumbersNet.csproj --configuration Release --no-build --output ./dist /p:Version=${{ env.PACKAGE_VERSION }}
 
       # Exchanges the GitHub OIDC token for a temporary, 1-hour NuGet.org key
       - name: NuGet Login
