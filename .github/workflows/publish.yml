@@ -4,6 +4,7 @@ on:
   release:
     types: [published]
 
+
 # This permissions block is strictly required for OpenID Connect (OIDC) to function
 permissions:
   id-token: write
