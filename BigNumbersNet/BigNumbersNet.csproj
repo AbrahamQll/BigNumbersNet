@@ -10,7 +10,8 @@
 		<Description>An arbitrary-precision decimal and integer arithmetic library for .NET.</Description>
 		<PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
 		<PackageTags>bignumber math biginteger arbitrary-precision arithmetic decimal</PackageTags>
-		<PackageReadmeFile>..\README.md</PackageReadmeFile>
+		<!-- This must be README.md because it points to the path INSIDE the compiled .nupkg file -->
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageProjectUrl>https://github.com/AbrahamQll/BigNumbersNet</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/AbrahamQll/BigNumbersNet.git</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
@@ -24,7 +25,9 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-<ItemGroup>
+	</ItemGroup>
+	<ItemGroup>
+		<!-- This points to where the file is on your physical disk during packing -->
 		<None Include="..\README.md" Pack="true" PackagePath="\"/>
 	</ItemGroup>
 </Project>
