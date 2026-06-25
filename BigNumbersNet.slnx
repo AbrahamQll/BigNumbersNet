@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="BigNumbersNet.Tests/BigNumbersNet.Tests.csproj" />
+  <Project Path="BigNumbersNet/BigNumbersNet.csproj" />
+</Solution>
