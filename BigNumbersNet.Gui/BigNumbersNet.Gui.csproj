@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<OutputType>WinExe</OutputType>
-		<TargetFramework>net8.0-windows</TargetFramework>
-		<Nullable>enable</Nullable>
-		<UseWindowsForms>true</UseWindowsForms>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<!-- Prevents this executable project from being compiled into a NuGet package -->
-		<IsPackable>false</IsPackable>
-	</PropertyGroup>
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <!-- Allows the project to be restored and evaluated on Linux runners -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<!-- Reference your existing BigNumber library -->
-		<ProjectReference Include="..\BigNumbersNet\BigNumbersNet.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BigNumbersNet\BigNumbersNet.csproj" />
+  </ItemGroup>
 
 </Project>

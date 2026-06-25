@@ -4,7 +4,6 @@ on:
   release:
     types: [published]
 
-
 # This permissions block is strictly required for OpenID Connect (OIDC) to function
 permissions:
   id-token: write
@@ -38,16 +37,16 @@ jobs:
           CLEAN_VERSION="${TAG_NAME#v}" # Strips leading 'v' if present (e.g., v1.0.0 -> 1.0.0)
           echo "PACKAGE_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
 
-      # FIX: Restore only the library project, bypassing the Windows GUI app
+      # Explicitly pass EnableWindowsTargeting during restore
       - name: Restore dependencies
-        run: dotnet restore BigNumbersNet/BigNumbersNet.csproj
+        run: dotnet restore BigNumbersNet/BigNumbersNet.csproj /p:EnableWindowsTargeting=true
 
-      # FIX: Build only the library project
+      # Explicitly pass EnableWindowsTargeting during build
       - name: Build Project
-        run: dotnet build BigNumbersNet/BigNumbersNet.csproj --configuration Release --no-restore
+        run: dotnet build BigNumbersNet/BigNumbersNet.csproj --configuration Release --no-restore /p:EnableWindowsTargeting=true
 
+      # Create the package (EnableWindowsTargeting is inherited here)
       - name: Create NuGet Package
-        # Point directly to the library csproj to ignore tests and GUI projects
         run: dotnet pack BigNumbersNet/BigNumbersNet.csproj --configuration Release --no-build --output ./dist /p:Version=${{ env.PACKAGE_VERSION }}
 
       # Exchanges the GitHub OIDC token for a temporary, 1-hour NuGet.org key
